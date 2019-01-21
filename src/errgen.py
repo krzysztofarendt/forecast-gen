@@ -66,8 +66,8 @@ if __name__ == "__main__":
 
     # Generate and plot one error vector and its ACF
     # ==============================================
-    phi1 = 0.95
-    phi2 = 0.05
+    phi1 = 0.99
+    phi2 = 0.01
     n = 100
     mae = 1
 
@@ -88,7 +88,7 @@ if __name__ == "__main__":
 
     ax = axes[0][0]
     ax.plot(e1)
-    ax.set_title(r"$\phi$ = {}, MAE = {:.2f}".format(phi1, mae1))
+    ax.set_title("Smooth error\n$\phi$ = {}, MAE = {:.2f}".format(phi1, mae1))
     ax.set_ylabel("Absolute error")
     ax.set_ylim(-5 * mae, 5 * mae)
     ax.plot(np.zeros(e1.size), 'k--', lw=1)
@@ -103,7 +103,7 @@ if __name__ == "__main__":
 
     ax = axes[0][1]
     ax.plot(e2)
-    ax.set_title(r"$\phi$ = {}, MAE = {:.2f}".format(phi2, mae2))
+    ax.set_title("Almost white noise error\n$\phi$ = {}, MAE = {:.2f}".format(phi2, mae2))
     ax.set_ylabel("Absolute error")
     ax.set_ylim(-5 * mae, 5 * mae)
     ax.plot(np.zeros(e2.size), 'k--', lw=1)
