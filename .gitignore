@@ -1,3 +1,9 @@
+# Custom files (to be deleted later)
+r-analysis/
+weather/
+literature/
+.vscode/
+
 # Python
 # ================================================================
 # Byte-compiled / optimized / DLL files
@@ -143,3 +149,4 @@ vignettes/*.pdf
 
 # Shiny token, see https://shiny.rstudio.com/articles/shinyapps.html
 rsconnect/
+.Rproj.user
