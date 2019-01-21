@@ -15,15 +15,14 @@ def error(phi, n, mae, eps=0.1):
     getting a vector with some bias.
 
     Since the output of the AR model is random, the function
-    generates sample vectors until it finds a vector with MAE = mae.
+    generates sample vectors in a loop until it finds a vector with MAE = mae.
     The standard deviation of the noise in the AR model is adapted
-    to the expected MAE, so that that the number of 
+    to the aimed MAE so that the expected number of iterations is minimal.
 
     :parameter phi: float from 0 to 1, autocorrelation coefficient
     :parameter n: int, output vector length
-    :parameter sd: float, standard deviation of the output vector
     :parameter mae: float, mean absolute error
-    :parameter eps: float, standard deviation tolerance
+    :parameter eps: float, mae tolerance
     :return: 1D numpy array
     """
     # Initialize `mae_sample` with a high value,
