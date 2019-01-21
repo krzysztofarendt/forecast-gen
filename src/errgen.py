@@ -100,6 +100,7 @@ if __name__ == "__main__":
     ax.plot(np.full(e1.size, -ci1), 'b--', lw=1)
     ax.plot(np.zeros(e1.size), 'k--', lw=1)
     ax.set_xlim(0, n)
+    ax.set_xlabel('Error vector index')
 
     ax = axes[0][1]
     ax.plot(e2)
@@ -115,6 +116,7 @@ if __name__ == "__main__":
     ax.plot(np.full(e2.size, -ci2), 'b--', lw=1)
     ax.plot(np.zeros(e2.size), 'k--', lw=1)
     ax.set_xlim(0, n)
+    ax.set_xlabel('Error vector index')
 
     plt.show()
 
