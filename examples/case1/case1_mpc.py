@@ -9,64 +9,7 @@ from statsmodels.tsa.stattools import acf
 from scipy.stats import norm
 
 import mshoot
-
-
-# TODO: Import from original module!
-def error(phi, n, mae, eps=0.1):
-    """
-    Generates a random error vector of length `n`, that results
-    in the mean absolute error (MAE) equal to `mae`.
-    The error vector is based on the AR(1) model. The autocorrelation is
-    controlled by the parameter `phi`. The first element of the output
-    vector is 0 (no error). The higher `phi`, the higher chance of
-    getting a vector with some bias.
-
-    Since the output of the AR model is random, the function
-    generates sample vectors in a loop until it finds a vector with MAE = mae.
-    The standard deviation of the noise in the AR model is adapted
-    to the aimed MAE so that the expected number of iterations is minimal.
-
-    :parameter phi: float from 0 to 1, autocorrelation coefficient
-    :parameter n: int, output vector length
-    :parameter mae: float, mean absolute error
-    :parameter eps: float, mae tolerance
-    :return: 1D numpy array
-    """
-    if mae == 0:
-        return np.zeros(n)
-
-    # Initialize `mae_sample` with a high value,
-    # so that the condition in `while` is not met
-    mae_sample = mae + 2 * eps
-
-    # Initialize the loop counter
-    count = 0
-
-    # Analytically derived standard deviation of the noise in AR(1),
-    # which minimizes the number of iterations needed
-    # to find the error vector for which MAE = mae:
-    # (0.674 is the third quartile of the normal distribution)
-    # TODO: Validate. For large `mae` and large `n` it still takes many iterations...
-    sdw = mae / (0.674 * (phi / np.sqrt(1 - phi ** 2) + 1))
-
-    while abs(mae_sample - mae) >= eps:
-        count += 1
-
-        # Initialize error vector
-        e = np.zeros(n)
-
-        for i in range(2, n, 1):
-            # Add next vector element using the AR(1) model
-            e[i] = e[i-1] * phi + np.random.normal(loc=0, scale=sdw, size=1)[0]
-
-        # Check tolerance
-        mae_sample = np.mean(np.abs(e))
-
-        # TODO: Use logging instead of print
-        print("Error generation try number {} >> MAE = {}".format(count, mae_sample))
-
-    return e
-
+from fcastgen import error
 
 
 # Set up logging
@@ -118,7 +61,7 @@ def cfun(xdf, ydf):
     return Qr ** 2
 
 # Iterate over FMUs
-horizons = [2, 4, 6]
+horizons = [2, 4, 6, 8]
 relerr = [0, 10, 20, 30]  # %
 runs = 5
 

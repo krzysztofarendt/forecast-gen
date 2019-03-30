@@ -1,5 +1,5 @@
 # Set working directory -------------------------------------------------------
-setwd("D:/code/forecast-gen/examples/case1")
+setwd("D:/code/ibpsa-p1/forecast-gen/examples/case1")
 rm(list=ls())
 
 # Load libraries --------------------------------------------------------------
