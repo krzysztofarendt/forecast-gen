@@ -3,6 +3,9 @@ r-analysis/
 weather/
 literature/
 .vscode/
+examples/mpc/
+*_log.txt
+*_result.txt
 
 # Python
 # ================================================================

@@ -25,6 +25,9 @@ def error(phi, n, mae, eps=0.1):
     :parameter eps: float, mae tolerance
     :return: 1D numpy array
     """
+    if mae == 0:
+        return np.zeros(n)
+
     # Initialize `mae_sample` with a high value,
     # so that the condition in `while` is not met
     mae_sample = mae + 2 * eps
@@ -36,6 +39,7 @@ def error(phi, n, mae, eps=0.1):
     # which minimizes the number of iterations needed
     # to find the error vector for which MAE = mae:
     # (0.674 is the third quartile of the normal distribution)
+    # TODO: Validate. For large `mae` and large `n` it still takes many iterations...
     sdw = mae / (0.674 * (phi / np.sqrt(1 - phi ** 2) + 1))
 
     while abs(mae_sample - mae) >= eps:
@@ -66,7 +70,7 @@ if __name__ == "__main__":
     # Generate and plot one error vector and its ACF
     # ==============================================
     phi1 = 0.99
-    phi2 = 0.01
+    phi2 = 0.5
     n = 100
     mae = 1
 
