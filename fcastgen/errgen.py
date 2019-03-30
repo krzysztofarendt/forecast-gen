@@ -122,6 +122,3 @@ if __name__ == "__main__":
     ax.set_xlabel('Error vector index')
 
     plt.show()
-
-    # Test different correlation coefficients (phi)
-
