@@ -6,6 +6,8 @@ literature/
 examples/mpc/
 *_log.txt
 *_result.txt
+status
+success
 
 # Python
 # ================================================================
