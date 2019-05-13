@@ -5,7 +5,7 @@ from scipy.stats import norm
 import pandas as pd
 
 
-def error(phi, n, mae, eps=0.1):
+def error(phi, n, mae, eps=0.1, hist=False, verbose=False):
     """
     Generates a random error vector of length `n`, that results
     in the mean absolute error (MAE) equal to `mae`.
@@ -23,7 +23,9 @@ def error(phi, n, mae, eps=0.1):
     :parameter n: int, output vector length
     :parameter mae: float, mean absolute error
     :parameter eps: float, mae tolerance
-    :return: 1D numpy array
+    :parameter hist: bool, return also history of all guesses as a list
+    :parameter verbose: bool, if True, print info on screen
+    :return: 1D numpy array or a tuple (1D numpy array, list) if hist is True
     """
     if mae == 0:
         return np.zeros(n)
@@ -36,11 +38,30 @@ def error(phi, n, mae, eps=0.1):
     count = 0
 
     # Analytically derived standard deviation of the noise in AR(1),
-    # which minimizes the number of iterations needed
-    # to find the error vector for which MAE = mae:
-    # (0.674 is the third quartile of the normal distribution)
-    # TODO: Validate. For large `mae` and large `n` it still takes many iterations...
-    sdw = mae / (0.674 * (phi / np.sqrt(1 - phi ** 2) + 1))
+    # which is supposed to minimize the number of iterations needed
+    # to find the error vector for which MAE = mae. According to my
+    # calculations, which might be incorrect (see presentation/derivation.jpg),
+    # the optimal scaling factor k = 0.674. 0.674 is the third quartile of
+    # the normal distribution, or the median of abs(normal_distribution).
+    # This factor, however, works fine with small vectors (up to n = 1000).
+    # I noticed that depending on phi, the function error() yields biased MAE
+    # (sometimes too high, sometimes too low), suggesting there is something
+    # wrong with the equation for sdw.
+    #
+    # So I implemented the following workaround:
+    #   1. Use k=0.674 as first guess.
+    #   2. Try ten times to get a vector with requested MAE.
+    #   3. If unsuccesful, every next iteration slightly increase/decrease k,
+    #      depending on whether past MAEs were too high/low.
+    #
+    # It works fine so far!!!
+    #
+    def sdw(k=0.674):
+        return mae / (k * (phi / np.sqrt(1 - phi ** 2) + 1))
+
+    mae_hist = list()
+    n_iter = 0
+    k = 0.674  # First guess
 
     while abs(mae_sample - mae) >= eps:
         count += 1
@@ -48,17 +69,38 @@ def error(phi, n, mae, eps=0.1):
         # Initialize error vector
         e = np.zeros(n)
 
-        for i in range(2, n, 1):
+        for i in range(1, n, 1):
             # Add next vector element using the AR(1) model
-            e[i] = e[i-1] * phi + np.random.normal(loc=0, scale=sdw, size=1)[0]
+            e[i] = e[i-1] * phi + np.random.normal(loc=0, scale=sdw(k), size=1)[0]
 
         # Check tolerance
         mae_sample = np.mean(np.abs(e))
 
-        # TODO: Use logging instead of print
-        print("Error generation try number {} >> MAE = {}".format(count, mae_sample))
+        mae_hist.append(mae_sample)
 
-    return e
+        # Too many unsuccessful iterations,
+        # try to modify k
+        if n_iter > 10:
+            mean_mae = np.mean(mae_hist)
+            # If past MAEs are too low, decrease k
+            if mean_mae < mae:
+                k = k * 0.99
+            # If pas MAEs are too high, increase k
+            elif mean_mae > mae:
+                k = k * 1.01
+
+            if verbose:
+                print("New k = {}".format(k))
+
+        if verbose:
+            print("Error generation try number {} >> MAE = {}".format(count, mae_sample))
+
+        n_iter += 1
+
+    if hist:
+        return e, mae_hist
+    else:
+        return e
 
 
 if __name__ == "__main__":
@@ -122,3 +164,14 @@ if __name__ == "__main__":
     ax.set_xlabel('Error vector index')
 
     plt.show()
+
+    # PLOT HISTOGRAM OF MAEs FROM ALL ITERATIONS
+    # =============================================
+    # phi = 0.9
+    # n = 10000
+    # mae = 1
+
+    # e, h = error(phi, n, mae, 0.01, hist=True, verbose=True)
+
+    # plt.hist(h)
+    # plt.show()
